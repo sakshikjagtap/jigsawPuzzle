@@ -1,0 +1,20 @@
+.row {
+  display: flex;
+  gap: 5px;
+}
+
+.frame {
+  display: flex;
+  flex-wrap: wrap;
+  width: 400px;
+  gap: 5px;
+}
+
+img {
+  width: 149px;
+  height: 149px;
+}
+
+#message {
+  font-size: 2em;
+}
