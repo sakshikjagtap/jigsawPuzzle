@@ -16,7 +16,7 @@ class Puzzle {
   }
 
   initialize() {
-    this.#grid = shuffleImages([...this.imageTiles, this.blankTile]);
+    this.#grid = shufflePositions([...this.imageTiles, this.blankTile]);
   }
 
   #getTilePosition(tile) {
@@ -61,13 +61,14 @@ class Puzzle {
   }
 }
 
+const isUnique = (list, number) => !list.includes(number);
+
 const generateRandomPosition = () => {
   const positions = [];
 
   while (positions.length < 9) {
     const randomNumber = Math.floor(Math.random() * 9);
-
-    if (!positions.includes(randomNumber)) {
+    if (isUnique(positions, randomNumber)) {
       positions.push(randomNumber);
     }
   }
@@ -91,13 +92,13 @@ const shuffleImages = (images) => {
   return groupTiles(shuffledTiles);
 };
 
-const generateImageHtml = (images) => {
+const generateImageHtml = (grid) => {
   let position = 1;
 
-  return images.map(cell => {
-    return cell.map(image => {
+  return grid.map(row => {
+    return row.map(imagePath => {
       const currentImage = document.createElement('img');
-      currentImage.src = 'images/' + image;
+      currentImage.src = 'images/' + imagePath;
       currentImage.id = position;
       position++;
       return currentImage;
@@ -106,7 +107,7 @@ const generateImageHtml = (images) => {
 };
 
 const generateRows = (count) => {
-  return Array(count).fill(0).map((ele, index) => {
+  return Array(count).fill(0).map((element, index) => {
     const row = document.createElement('div');
     row.className = 'row';
     row.id = 'row-' + (index + 1);
@@ -127,12 +128,10 @@ const generatePuzzleHtml = (images) => {
   return rows;
 };
 
-const displayMessage = () => {
+const displaySuccessMessage = () => {
   const message = document.getElementById('message');
   message.innerText = 'Congratulation, you solved it..!';
 };
-
-const generateNumbers = (count, start = 0, step = 1) => (Array(count).fill(' ')).map((x, i) => start + i * step);
 
 const draw = (grid) => {
   const frame = document.getElementById('puzzle-frame');
@@ -146,12 +145,17 @@ const startPuzzle = (event, puzzle) => {
   draw(puzzle.getGrid());
 
   if (puzzle.isSolved()) {
-    displayMessage();
+    displaySuccessMessage();
   };
 };
 
+generateTilesName = () =>
+  Array(8).fill(0).map((element, index) => `${index + 1}.jpg`);
+
 const main = () => {
-  const puzzle = new Puzzle(generateNumbers(8, 1).map(n => `${n}.jpg`), 'white.jpg');
+  const tiles = generateTilesName();
+  const puzzle = new Puzzle(tiles, 'white.jpg');
+
   puzzle.initialize();
   draw(puzzle.getGrid());
   document.addEventListener('click', (event) => startPuzzle(event, puzzle));
